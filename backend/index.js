@@ -23,7 +23,11 @@ async function run() {
     // get api
     app.get('/api/products', async (req, res) => {
         const products = await collection.find({}).toArray();
-        res.send(products)
+        const count = await collection.find({}).count();
+        res.send({
+            products,
+            count
+        })
     })
 
 

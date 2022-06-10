@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import useProducts from '../../hooks/useProducts';
 import { addToDb, getStoredCart } from '../../utilities/fakedb';
@@ -9,35 +9,40 @@ import './Shop.css';
 const Shop = () => {
     const [products, setProducts] = useProducts();
     const [cart, setCart] = useState([]);
+    const [pageCount, setPageCount] = useState(0);
 
-    useEffect( () =>{
+    useEffect(() => {
         const storedCart = getStoredCart();
         const savedCart = [];
-        for(const id in storedCart){
+        for (const id in storedCart) {
             const addedProduct = products.find(product => product.id === id);
-            if(addedProduct){
+            if (addedProduct) {
                 const quantity = storedCart[id];
                 addedProduct.quantity = quantity;
                 savedCart.push(addedProduct);
             }
         }
         setCart(savedCart);
-    }, [products])
+        const count = products.length;
+        const pageNumbers = Math.ceil(count / 10);
+        setPageCount(pageNumbers);
+        console.log(pageCount);
+    }, [products, products.count, pageCount])
 
-    const handleAddToCart = (selectedProduct) =>{
-        console.log(selectedProduct);
+
+    const handleAddToCart = (selectedProduct) => {
         let newCart = [];
         const exists = cart.find(product => product.id === selectedProduct.id);
-        if(!exists){
+        if (!exists) {
             selectedProduct.quantity = 1;
             newCart = [...cart, selectedProduct];
         }
-        else{
+        else {
             const rest = cart.filter(product => product.id !== selectedProduct.id);
             exists.quantity = exists.quantity + 1;
             newCart = [...rest, exists];
         }
-        
+
         setCart(newCart);
         addToDb(selectedProduct.id);
     }
@@ -46,12 +51,17 @@ const Shop = () => {
         <div className='shop-container'>
             <div className="products-container">
                 {
-                    products.map(product=><Product 
+                    products.map(product => <Product
                         key={product.id}
                         product={product}
                         handleAddToCart={handleAddToCart}
-                        ></Product>)
+                    ></Product>)
                 }
+                <div className="pagination">
+                    {
+                        [...Array(pageCount).keys()].map(page => <button><Link key={page} to={`/shop/${page + 1}`}>{page + 1}</Link></button> )
+                    }
+                </div>
             </div>
             <div className="cart-container">
                 <Cart cart={cart}>
