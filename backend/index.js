@@ -5,6 +5,12 @@ const port = 5500
 // require dor env
 require('dotenv').config()
 
+// middleware
+const cors = require('cors')
+app.use(cors())
+app.use(express.json())
+
+
 const { MongoClient, ServerApiVersion } = require('mongodb');
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.szke7.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
@@ -12,6 +18,14 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 async function run() {
     await client.connect() ? console.log('Connected to MongoDB') : console.log('Error connecting to MongoDB');
     const collection = client.db("shop").collection("products");
+
+
+    // get api
+    app.get('/api/products', async (req, res) => {
+        const products = await collection.find({}).toArray();
+        res.send(products)
+    })
+
 
 }
 run().catch(console.dir);
