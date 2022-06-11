@@ -22,6 +22,7 @@ async function run() {
 
     // get api
     app.get('/api/products', async (req, res) => {
+        console.log(req.query);
         const products = await collection.find({}).toArray();
         const count = await collection.find({}).count();
         res.send({

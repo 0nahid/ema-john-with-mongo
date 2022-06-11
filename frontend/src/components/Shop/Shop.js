@@ -9,6 +9,7 @@ import './Shop.css';
 const Shop = () => {
     const [products, setProducts] = useProducts();
     const [cart, setCart] = useState([]);
+    const [page, setPage] = useState(0);
     const [pageCount, setPageCount] = useState(0);
 
     useEffect(() => {
@@ -57,12 +58,19 @@ const Shop = () => {
                         handleAddToCart={handleAddToCart}
                     ></Product>)
                 }
+                <br /><br /><br />
                 <div className="pagination">
                     {
-                        [...Array(pageCount).keys()].map(page => <button><Link key={page} to={`/shop/${page + 1}`}>{page + 1}</Link></button> )
+                        [...Array(pageCount).keys()]
+                            .map(number => <button
+                                className={number === page ? "selected" : ''}
+                                key={number}
+                                onClick={() => setPage(number)}
+                            >{number+1}</button>)
                     }
                 </div>
             </div>
+
             <div className="cart-container">
                 <Cart cart={cart}>
                     <Link to="/orders">
